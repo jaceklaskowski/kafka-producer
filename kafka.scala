@@ -4,6 +4,9 @@ import org.apache.kafka.clients.producer.RecordMetadata
 
 object KafkaProducer extends App {
 
+  val topic = util.Try(args(0)).getOrElse("my-topic-test")
+  println(s"Connecting to $topic")
+
   import org.apache.kafka.clients.producer.KafkaProducer
 
   val props = new java.util.Properties()
@@ -18,7 +21,7 @@ object KafkaProducer extends App {
 
   val polish = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy H:mm:ss")
   val now = java.time.LocalDateTime.now().format(polish)
-  val record = new ProducerRecord[Integer, String]("my-topic", 1, s"hello at $now")
+  val record = new ProducerRecord[Integer, String](topic, 1, s"hello at $now")
   val metaF: Future[RecordMetadata] = producer.send(record)
   val meta = metaF.get() // blocking!
   val msgLog =
